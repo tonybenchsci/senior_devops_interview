@@ -1,4 +1,4 @@
-# devops_interview
+# senior_devops_interview
 This is a hands-on assessment of Infrastructure-as-Code (IaC), CI/CD, and public cloud providers. You may use GCP or AWS as the platform of your choice; you may use `gcloud deployment-manager`, `aws cloudformation`, or `terraform` command-line interface tools. Please do not spend more than 2 hours on this task. You're not expected to setup your own personal cloud account, but there should be enough configuration details so that deploying to a real cloud environment will theoretically work. Be prepared to justify your design.
 
 ## Setup:
@@ -8,12 +8,15 @@ This is a hands-on assessment of Infrastructure-as-Code (IaC), CI/CD, and public
 
 ## Background:
 A simple Flask webserver that displays "Hello World from BenchSci!" runs on a Virtual Machine on the cloud. The VM that runs it has several firewall rules associated. The firewall rules are:
-- Allow all egress
+- Allow all egress, but deny:
+```
+TCP ports 6881-6889 to everywhere on the internet
+```
 - Deny all ingress, but allow:
 ```
 TCP Ports 80, 443 from everywhere on the internet
-ICMP (ping) from  everywhere on the internet
-TCP Port 22 from 104.154.0.0/15 (GOOGLE LLC)
+Allow VM to be pinged from everywhere on the internet
+TCP Port 22 for all IPs from 104.154.0.0 to 104.155.255.255 (GOOGLE LLC)
 Allow all tcp/udp internal traffic within the VPC
 ```
 
@@ -21,9 +24,12 @@ Allow all tcp/udp internal traffic within the VPC
 The above cloud-native application was manually configured using Web console UIs, and it was accidently deleted by a junior developer. None of the cloud firewall rules were captured in IaC, and neither is the VM configuration. Your assignment is to create the cloud resources in configuration files, and setup CI/CD to create/update the rules based on code changes in the master branch. This would allow arbitrary deploys of the application stack, resilient to incidents. It also allows a team of DevOps engineers to collaborate on new infrastructure definitions.
 
 ## Requirements:
-- Complete `./circle/config.yml` file that installs CLI tools as needed, configures auth, performs basic sanity tests, and deploys resources.
-- Configuration file(s) that define a VPC network that the VM lives in, Firewall rules / Security groups, and a single VM
+- Complete `./circle/config.yml` file that installs CLI tools as needed, configures auth, performs basic sanity tests, and deploys resources
+- Configuration file(s) that define a VPC network that the VM lives in, Firewall rules / Security groups, and a single VM for the server
+- Two additional infrastructure configurations (in seperate commits) that add scalability and security
+- Add basic logging/monitoring capabilities (in a seperate commit)
 - (Theoretically deployed) VM runs the python webserver defined in `app.py` on startup and any restarts
 - (Theoretically deployed) Working public IP address to see "Hello World from BenchSci!" in a web browser
+- Directory/file structure and naming that make adding another cloud provider straight-forward
 - Basic Documentation (README.md) and architecture diagram
 - Avoid: Unnecessary abstractions in the form of configuration templates and/or modules
